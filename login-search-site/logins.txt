@@ -1,0 +1,10 @@
+CREATE TABLE logins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    site VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+
+INSERT INTO logins (site, email, password) VALUES ('example.com', 'email1@example.com', 'password1');
+INSERT INTO logins (site, email, password) VALUES ('another-site.com', 'email2@example.com', 'password2');
