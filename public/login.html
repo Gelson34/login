@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="index.html">Pesquisar Logins</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registro</a>
+    </nav>
+    <h1>Login</h1>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" name="email" placeholder="E-mail" required>
+      <input type="password" id="loginPassword" name="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="loginResult"></div>
+  </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+
+      fetch('login.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        const resultDiv = document.getElementById('loginResult');
+        if (data.status === 'success') {
+          resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+          // Redirecionar para a página principal ou dashboard
+          window.location.href = 'index.html';
+        } else {
+          resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        document.getElementById('loginResult').innerHTML = `<p style="color: red;">Erro ao fazer login. Tente novamente.</p>`;
+      });
+    });
+  </script>
+</body>
+</html>

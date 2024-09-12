@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesquisar Logins</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registro</a>
+    </nav>
+    <h1>Pesquisar Logins</h1>
+    <input type="text" id="siteInput" placeholder="Digite o nome do site">
+    <button onclick="searchLogins()">Pesquisar</button>
+    <br><br>
+    <h2>Adicionar Login</h2>
+    <input type="text" id="siteAdd" placeholder="Nome do site">
+    <input type="email" id="emailAdd" placeholder="E-mail">
+    <input type="password" id="passwordAdd" placeholder="Senha">
+    <button onclick="addLogin()">Adicionar</button>
+
+    <h2>Importar Logins de Arquivo (.txt)</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" id="fileInput" accept=".txt">
+      <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+    
+    <div class="result" id="result"></div>
+  </div>
+  <script>
+    function searchLogins() {
+      const site = document.getElementById('siteInput').value.trim();
+      if (!site) {
+        alert('Por favor, insira o nome do site.');
+        return;
+      }
+      fetch(`search.php?site=${encodeURIComponent(site)}`)
+        .then(response => response.json())
+        .then(data => {
+          const resultDiv = document.getElementById('result');
+          resultDiv.innerHTML = '';
+          if (data.length === 0) {
+            resultDiv.innerHTML = `<p>Nenhum login encontrado para o site: <strong>${site}</strong></p>`;
+          } else {
+            data.forEach(login => {
+              resultDiv.innerHTML += `
+                <p>
+                  <strong>Site:</strong> ${login.site}<br>
+                  <strong>E-mail:</strong> ${login.email}<br>
+                  <strong>Senha:</strong> ${login.password}
+                </p>
+              `;
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          document.getElementById('result').innerHTML = `<p>Erro ao buscar os dados. Por favor, tente novamente mais tarde.</p>`;
+        });
+    }
+
+    function addLogin() {
+      const site = document.getElementById('siteAdd').value.trim();
+      const email = document.getElementById('emailAdd').value.trim();
+      const password = document.getElementById('passwordAdd').value.trim();
+
+      if (!site || !email || !password) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      fetch('add_login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ site, email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Login adicionado com sucesso!');
+        } else {
+          alert('Erro ao adicionar login.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao adicionar login. Por favor, tente novamente mais tarde.');
+      });
+    }
+
+    function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Por favor, selecione um arquivo.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('upload_logins.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Logins importados com sucesso!');
+        } else {
+          alert('Erro ao importar logins.');
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao importar logins. Por favor, tente novamente mais tarde.');
+      });
+    }
+  </script>
+</body>
+</html>

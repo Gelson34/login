@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="index.html">Pesquisar Logins</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registro</a>
+    </nav>
+    <h1>Registro</h1>
+    <form id="registerForm">
+      <input type="text" id="registerName" name="name" placeholder="Nome" required>
+      <input type="email" id="registerEmail" name="email" placeholder="E-mail" required>
+      <input type="password" id="registerPassword" name="password" placeholder="Senha" required>
+      <button type="submit">Registrar</button>
+    </form>
+    <div id="registerResult"></div>
+  </div>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+
+      fetch('register.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        const resultDiv = document.getElementById('registerResult');
+        if (data.status === 'success') {
+          resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+        } else {
+          resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        document.getElementById('registerResult').innerHTML = `<p style="color: red;">Erro ao registrar. Tente novamente.</p>`;
+      });
+    });
+  </script>
+</body>
+</html>
